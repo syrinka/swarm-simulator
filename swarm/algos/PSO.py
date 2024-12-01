@@ -62,3 +62,5 @@ class PSOSwarm(Swarm):
                     + meta['c1'] * np.random.rand() * (pbest[i] - sol[i]) \
                     + meta['c2'] * np.random.rand() * (gbest[i] - sol[i])
                 sol[i] += self.v[n][i]
+
+        return sols

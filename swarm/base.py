@@ -110,7 +110,7 @@ class Swarm(ABC):
                 ))
             if i != epochs - 1:
                 # not last round
-                self.update(self.solutions, fits)
+                self.solutions = self.update(self.solutions, fits)
 
 
     @property
@@ -136,7 +136,7 @@ class Swarm(ABC):
 
 
     @abstractmethod
-    def update(self, sols: list[Solution], fits: list[float]):
+    def update(self, sols: list[Solution], fits: list[float]) -> list[Solution]:
         raise NotImplementedError()
 
 
