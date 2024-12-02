@@ -78,7 +78,7 @@ class Swarm(ABC):
     solutions: list[Solution]
     record: bool
     records: list[Snapshot]
-    metavar: dict[str, Any]
+    metavar: dict[str, Any] = {}
 
     epoch = 0
 
