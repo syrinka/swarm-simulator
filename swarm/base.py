@@ -81,6 +81,7 @@ class Swarm(ABC):
     metavar: dict[str, Any] = {}
 
     epoch = 0
+    max_epoch = 0
 
     def __init__(self, population: int, problem: Problem, seed: int | None = None, record: bool = True, **metavar):
         self.pops = population
@@ -95,6 +96,7 @@ class Swarm(ABC):
 
 
     def evolve(self, epochs: int = 1):
+        self.max_epoch = epochs
         for i in range(epochs):
             self.epoch += 1
             fits = []
@@ -116,6 +118,11 @@ class Swarm(ABC):
     @property
     def nargs(self) -> int:
         return len(self.problem.args)
+    
+
+    @property
+    def progress(self) -> float:
+        return self.epoch / self.max_epoch
 
 
     def __repr__(self) -> str:
