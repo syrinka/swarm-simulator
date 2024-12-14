@@ -10,8 +10,8 @@ class Evaluator(ABC):
         ...
 
     @classmethod
-    def getproblem(cls, nargs: int) -> Problem:
-        return Problem([ArgInfo()] * nargs, cls.infer)
+    def getproblem(cls, nargs: int, **kwargs) -> Problem:
+        return Problem([ArgInfo(**kwargs)] * nargs, cls.infer)
 
 
 class Sphere(Evaluator):
