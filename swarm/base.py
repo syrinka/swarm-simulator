@@ -108,7 +108,6 @@ class Swarm(ABC):
     metavar: dict[str, Any] = {}
 
     records: list[Snapshot]
-    best: Snapshot
 
     epoch = 0
     max_epoch = 0
@@ -141,8 +140,6 @@ class Swarm(ABC):
             best = self.solutions[fits.index(bestv)].copy()
             snap = Snapshot(self.epoch, bestv, best)
             self.records.append(snap)
-            if snap.best_fitness > self.best.best_fitness:
-                self.best = snap
 
             if i != epochs - 1:
                 self.solutions = self.update(self.solutions, fits)
