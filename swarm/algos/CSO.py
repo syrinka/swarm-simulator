@@ -13,14 +13,16 @@ class CSOSwarm(Swarm):
 
     Metavar
     =======
-    rn: 公鸡的数量/比例
-    cn：小鸡的数量/比例
-    g: 鸡群关系更新间隔
+    rn (int/float): 公鸡的数量/比例
+    cn (int/float)：小鸡的数量/比例
+    g (int): 鸡群关系更新间隔
+    fl (tuple[float]): 小鸡的探索参数
     """
     metavar = {
         'rn': 0,
         'cn': 0,
-        'g': 10
+        'g': 10,
+        'fl': (0.5, 0.9)
     }
 
     role: dict[int, ChickenType]
@@ -79,7 +81,7 @@ class CSOSwarm(Swarm):
                     newsol = sol + s1 * rand() * (sols[r1] - sol) + s2 * rand() * (sols[r2] - sol)
                 case 'chick':
                     m = self.leader[i]
-                    fl = rand() * 0.4 + 0.5
+                    fl = randrange(*self.metavar['fl'])
                     newsol = sol + fl * (sols[m] - sol)
             newsols.append(newsol)
         return newsols
