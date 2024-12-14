@@ -5,6 +5,8 @@ from typing import TypeAlias, Any, Callable, Literal, NamedTuple
 import numpy as np
 import numpy.typing as npt
 
+from .utils import *
+
 
 Solution: TypeAlias = npt.NDArray[np.float64]
 TargetFunction: TypeAlias = Callable[[Solution], float]
@@ -12,6 +14,7 @@ TargetFunction: TypeAlias = Callable[[Solution], float]
 
 OptimizeGoal: TypeAlias = Literal['maximum', 'minimum', 'zero']
 BoundaryStrategy: TypeAlias = Literal['saturate', 'wrap']
+InitializeStrategy: TypeAlias = Literal['random', 'lhs']
 
 
 @dataclass(kw_only=True, frozen=True)
@@ -59,12 +62,38 @@ class Problem(object):
     func: TargetFunction
     goal: OptimizeGoal = 'minimum'
 
-    def init_solutions(self, num: int, method = None) -> list[Solution]:
-        solutions = []
-        for _ in range(num):
-            solutions.append(np.random.rand(len(self.args)))
-        return solutions
+    def init_solutions(self, num: int, method: InitializeStrategy = 'random') -> list[Solution]:
+        match method:
+            case 'random':
+                sols = []
+                for _ in range(num):
+                    tmp = []
+                    for arg in self.args:
+                        n = np.random.rand() * (arg.max - arg.min) + arg.min
+                        tmp.append(n)
+                    sols.append(np.array(tmp))
+                return sols
 
+            case 'lhs':
+                # check if condition matches
+                for arg in self.args:
+                    if np.isinf(arg.max) or np.isinf(arg.min):
+                        raise ValueError('LHS method needs a finite range.')
+                x = []
+                for arg in self.args:
+                    samples = []
+                    p = np.linspace(arg.min, arg.max, len(self.args))
+                    for i in range(len(p) - 1):
+                        samples.append(rand() * (p[i+1] - p[i]) + p[i])
+                    x.append(samples)
+                sols = []
+                for _ in range(len(self.args)):
+                    sol = []
+                    for i in range(len(x)):
+                        ri = randint(0, len(x[i]))
+                        sol.append(x[i].pop(ri))
+                    sols.append(np.array(sol))
+                return sols
 
 class Snapshot(NamedTuple):
     epoch: int
