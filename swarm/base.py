@@ -76,49 +76,57 @@ class Swarm(ABC):
     pops: int
     problem: Problem
     solutions: list[Solution]
-    record: bool
-    records: list[Snapshot]
     metavar: dict[str, Any] = {}
+
+    records: list[Snapshot]
+    best: Snapshot
 
     epoch = 0
     max_epoch = 0
 
-    def __init__(self, population: int, problem: Problem, seed: int | None = None, record: bool = True, **metavar):
+    def __init__(self, population: int, problem: Problem, seed: int | None = None, **metavar):
         self.pops = population
         self.problem = problem
         if seed is not None:
             np.random.seed(seed)
         self.solutions = problem.init_solutions(population)
-        self.record = record
-        self.records = []
         self.metavar.update(metavar)
+        self.records = []
         self.post_init()
 
 
     def evolve(self, epochs: int = 1):
         self.max_epoch = epochs
         for i in range(epochs):
-            self.epoch += 1
+            self.epoch = i
             fits = []
+
+            # evaluate
             for n, sol in enumerate(self.solutions):
                 out = self.problem.func(sol)
                 fit = out
                 fits.append(fit)
-            if self.record:
-                bestv = min(fits)
-                best = self.solutions[fits.index(bestv)].copy()
-                self.records.append(Snapshot(
-                    self.epoch, bestv, best
-                ))
+
+            # record
+            bestv = min(fits)
+            best = self.solutions[fits.index(bestv)].copy()
+            snap = Snapshot(self.epoch, bestv, best)
+            self.records.append(snap)
+            if snap.best_fitness > self.best.best_fitness:
+                self.best = snap
+
             if i != epochs - 1:
-                # not last round
                 self.solutions = self.update(self.solutions, fits)
+                # constrain args if needed
+                for sol in self.solutions:
+                    for n in range(self.nargs):
+                        sol[n] = self.problem.args[n].constrain(sol[n])
 
 
     @property
     def nargs(self) -> int:
         return len(self.problem.args)
-    
+
 
     @property
     def progress(self) -> float:
