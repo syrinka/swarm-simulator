@@ -13,8 +13,8 @@ TargetFunction: TypeAlias = Callable[[Solution], float]
 
 
 OptimizeGoal: TypeAlias = Literal['maximum', 'minimum', 'zero']
-BoundaryStrategy: TypeAlias = Literal['saturate', 'wrap']
-InitializeStrategy: TypeAlias = Literal['random', 'lhs']
+BoundaryMethod: TypeAlias = Literal['saturate', 'wrap']
+InitializeMethod: TypeAlias = Literal['random', 'lhs']
 
 
 @dataclass(kw_only=True, frozen=True)
@@ -22,8 +22,8 @@ class ArgInfo(object):
     min: float = -np.inf
     max: float = np.inf
     grain: float | None = None
-    underflow: BoundaryStrategy = 'saturate'
-    overflow: BoundaryStrategy = 'saturate'
+    underflow: BoundaryMethod = 'saturate'
+    overflow: BoundaryMethod = 'saturate'
 
 
     def __post_init__(self):
@@ -62,7 +62,7 @@ class Problem(object):
     func: TargetFunction
     goal: OptimizeGoal = 'minimum'
 
-    def init_solutions(self, num: int, method: InitializeStrategy = 'random') -> list[Solution]:
+    def init_solutions(self, num: int, method: InitializeMethod = 'random') -> list[Solution]:
         match method:
             case 'random':
                 sols = []
