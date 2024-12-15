@@ -27,7 +27,7 @@ class ArgInfo(object):
 
 
     def __post_init__(self):
-        if self.max == self.min:
+        if self.max <= self.min:
             raise ValueError()
         if self.overflow == 'wrap' and self.min == -np.inf:
             raise ValueError()
