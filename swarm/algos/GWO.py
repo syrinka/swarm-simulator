@@ -3,7 +3,7 @@ from ..base import Swarm
 import numpy as np
 
 
-class GWOSwarm(Swarm):
+class GWO(Swarm):
     """
     灰狼算法
     """

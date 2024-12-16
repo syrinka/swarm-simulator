@@ -7,7 +7,7 @@ from typing import Literal
 
 ChickenType = Literal['rooster', 'hen', 'chick']
 
-class CSOSwarm(Swarm):
+class CSO(Swarm):
     """
     鸡群优化算法
 

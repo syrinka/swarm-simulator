@@ -4,7 +4,7 @@ import numpy as np
 from copy import deepcopy
 
 
-class QPSOSwarm(Swarm):
+class QPSO(Swarm):
     """
     量子粒子群算法
 

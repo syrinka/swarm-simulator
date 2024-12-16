@@ -4,7 +4,7 @@ import numpy as np
 from copy import deepcopy
 
 
-class PSOSwarm(Swarm):
+class PSO(Swarm):
     """
     经典粒子群算法
 
