@@ -6,6 +6,10 @@ import numpy as np
 class GWO(Swarm):
     """
     灰狼算法
+
+    Metavar
+    =======
+    a (float): 控制探索/包围阶段的比例
     """
 
     metavar = {
@@ -15,8 +19,8 @@ class GWO(Swarm):
     def update(self, sols, fits):
         # sort all solutions according to its fitness
         # pick top 3 as the leaders
-        order = np.argsort(fits)
-        alpha, beta, delta, *_ = [x for _, x in sorted(zip(order, sols))]
+        order = np.argsort(fits, order='desc')
+        alpha, beta, delta, *_ = sols[order]
 
         alpha = alpha.copy()
         beta = beta.copy()

@@ -1,4 +1,4 @@
-from ..base import Swarm, Solution
+from ..base import Swarm
 
 import numpy as np
 from copy import deepcopy
@@ -26,45 +26,20 @@ class QPSO(Swarm):
         'type': 1,
     }
 
-    gbest: Solution
-    gbestv: float
-
-    pbest: list[Solution]
-    pbestv: list[float]
-
-    def post_init(self):
-        self.gbest = deepcopy(self.solutions[0])
-        self.gbestv = np.inf
-        self.pbest = deepcopy(self.solutions)
-        self.pbestv = [np.inf] * self.pops
-
-
     def update(self, sols, fits):
         meta = self.metavar
 
-        # 更新 global best
-        bestv = np.min(fits)
-        if bestv < self.gbestv:
-            self.gbestv = bestv
-            self.gbest = sols[fits.index(self.gbestv)].copy()
-
         for n in range(self.pops):
             sol = sols[n]
-            fit = fits[n]
 
-            # 更新 personal best
-            if self.pbest[n] is None or fit < self.pbestv[n]:
-                self.pbest[n] = sol.copy()
-                self.pbestv[n] = fit
-
-            pbest = self.pbest[n]
-            gbest = self.gbest
+            pbest = self.pbestx[n]
+            gbest = self.gbestx
 
             # 吸引子
             att = None
             match meta['type']:
                 case 1:
-                    att = np.average(self.pbest)
+                    att = np.average(self.pbestx)
                 case 2:
                     rnd = np.random.rand()
                     att = rnd * pbest + (1-rnd) * gbest
