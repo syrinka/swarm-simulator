@@ -1,12 +1,12 @@
 import numpy as np
-from swarm.base import ArgInfo, Problem, Solution
+from swarm.base import ArgInfo, Problem, X
 from abc import ABC, abstractmethod
 
 
 class Evaluator(ABC):
     @staticmethod
     @abstractmethod
-    def infer(x: Solution) -> float:
+    def infer(x: X) -> float:
         ...
 
     @classmethod
@@ -16,13 +16,13 @@ class Evaluator(ABC):
 
 class Sphere(Evaluator):
     @staticmethod
-    def infer(x: Solution):
+    def infer(x: X):
         return np.sum(x ** 2).astype(float)
 
 
 class Ackley(Evaluator):
     @staticmethod
-    def infer(x: Solution):
+    def infer(x: X):
         a = 20
         b = 0.2
         c = 2 * np.pi

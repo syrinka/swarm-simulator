@@ -131,6 +131,10 @@ class Swarm(ABC):
             np.random.seed(seed)
         self.solutions = problem.initialize(population)
         self.metavar.update(metavar)
+        self.pbestx = np.zeros((self.pops, self.ndims))
+        self.pbesty = np.zeros((self.pops, ))
+        self.gbestx = np.zeros((self.ndims, ))
+        self.gbesty = -np.inf
         self.records = []
         self.post_init()
 
@@ -156,10 +160,10 @@ class Swarm(ABC):
                 fits[n] = fit
 
                 if fit > self.pbesty[n]:
-                    self.pbestx[n] = sol
+                    self.pbestx[n] = sol.copy()
                     self.pbesty[n] = fit
                 if fit > self.gbesty:
-                    self.gbestx = sol
+                    self.gbestx = sol.copy()
                     self.gbesty = fit
 
             # record

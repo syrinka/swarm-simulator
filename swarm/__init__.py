@@ -1,1 +1,1 @@
-from .base import ArgInfo, Problem, Solution
+from .base import ArgInfo, Problem
