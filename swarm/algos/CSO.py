@@ -1,4 +1,4 @@
-from ..base import Swarm, Solution
+from ..base import Swarm
 from ..utils import *
 
 import numpy as np
@@ -39,8 +39,6 @@ class CSO(Swarm):
 
 
     def update(self, sols, fits):
-        fits = [-x for x in fits] # FIXME how to map target func to fitness func
-
         rn = self.metavar['rn'] # rooster num
         cn = self.metavar['cn'] # chick num
         hn = self.pops - rn - cn # hen num

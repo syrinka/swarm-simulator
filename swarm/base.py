@@ -8,8 +8,15 @@ import numpy.typing as npt
 from .utils import *
 
 
-Solution: TypeAlias = npt.NDArray[np.float64]
-TargetFunction: TypeAlias = Callable[[Solution], float]
+X: TypeAlias = npt.NDArray[np.float64]
+"""Shape: (ndims, 1)"""
+Xs: TypeAlias = npt.NDArray[np.float64]
+"""Shape: (pops, ndims)"""
+Y: TypeAlias = float
+"""Type alias of float"""
+Ys: TypeAlias = npt.NDArray[np.float64]
+"""Shape: (pops, 1)"""
+TargetFunction: TypeAlias = Callable[[X], Y]
 
 
 OptimizeGoal: TypeAlias = Literal['maximum', 'minimum', 'zero']
@@ -62,7 +69,7 @@ class Problem(object):
     func: TargetFunction
     goal: OptimizeGoal = 'minimum'
 
-    def init_solutions(self, num: int, method: InitializeMethod = 'random') -> list[Solution]:
+    def initialize(self, num: int, method: InitializeMethod = 'random') -> Xs:
         match method:
             case 'random':
                 sols = []
@@ -72,7 +79,7 @@ class Problem(object):
                         n = np.random.rand() * (arg.max - arg.min) + arg.min
                         tmp.append(n)
                     sols.append(np.array(tmp))
-                return sols
+                return np.array(sols)
 
             case 'lhs':
                 # check if condition matches
@@ -93,21 +100,26 @@ class Problem(object):
                         ri = randint(0, len(x[i]))
                         sol.append(x[i].pop(ri))
                     sols.append(np.array(sol))
-                return sols
+                return np.array(sols)
 
-class Snapshot(NamedTuple):
+class Record(NamedTuple):
     epoch: int
-    best_fitness: float
-    best_solution: Solution
+    best_output: float
+    best_fitness: Y
+    best_solution: X
 
 
 class Swarm(ABC):
     pops: int
     problem: Problem
-    solutions: list[Solution]
+    solutions: Xs
     metavar: dict[str, Any] = {}
 
-    records: list[Snapshot]
+    pbestx: Xs
+    pbesty: Ys
+    gbestx: X
+    gbesty: Y
+    records: list[Record]
 
     epoch = 0
     max_epoch = 0
@@ -117,7 +129,7 @@ class Swarm(ABC):
         self.problem = problem
         if seed is not None:
             np.random.seed(seed)
-        self.solutions = problem.init_solutions(population)
+        self.solutions = problem.initialize(population)
         self.metavar.update(metavar)
         self.records = []
         self.post_init()
@@ -127,30 +139,50 @@ class Swarm(ABC):
         self.max_epoch = epochs
         for i in range(epochs):
             self.epoch = i
-            fits = []
+            fits = np.zeros((self.pops, ))
+            outs = np.zeros((self.pops, ))
 
             # evaluate
             for n, sol in enumerate(self.solutions):
                 out = self.problem.func(sol)
-                fit = out
-                fits.append(fit)
+                match self.problem.goal:
+                    case 'maximum':
+                        fit = out
+                    case 'minimum':
+                        fit = -out
+                    case 'zero':
+                        fit = -abs(out)
+                outs[n] = out
+                fits[n] = fit
+
+                if fit > self.pbesty[n]:
+                    self.pbestx[n] = sol
+                    self.pbesty[n] = fit
+                if fit > self.gbesty:
+                    self.gbestx = sol
+                    self.gbesty = fit
 
             # record
-            bestv = min(fits)
-            best = self.solutions[fits.index(bestv)].copy()
-            snap = Snapshot(self.epoch, bestv, best)
-            self.records.append(snap)
+            best_idx = fits.argmax()
+            best_output = outs[best_idx]
+            best_fitness = fits[best_idx]
+            best_solution = self.solutions[best_idx].copy()
+            rec = Record(self.epoch, best_output, best_fitness, best_solution)
+            self.records.append(rec)
 
             if i != epochs - 1:
-                self.solutions = self.update(self.solutions, fits)
+                new_solutions = self.update(self.solutions, fits)
+                if isinstance(new_solutions, list):
+                    new_solutions = np.array(new_solutions)
+                self.solutions = new_solutions
                 # constrain args if needed
                 for sol in self.solutions:
-                    for n in range(self.nargs):
+                    for n in range(self.ndims):
                         sol[n] = self.problem.args[n].constrain(sol[n])
 
 
     @property
-    def nargs(self) -> int:
+    def ndims(self) -> int:
         return len(self.problem.args)
 
 
@@ -163,21 +195,16 @@ class Swarm(ABC):
         return f'<{self.__class__.__name__} pop={self.pops} metavar={self.metavar}>'
 
 
-    def summary(self) -> str:
-        return '\n'.join([
-            f'Instance: {self}',
-            f'Records:',
-        ] + [
-            f'  {self.records[i]}' for i in range(len(self.records))
-        ])
-
-
     def fitness_history(self) -> list[float]:
         return [i.best_fitness for i in self.records]
 
 
+    def best_record(self) -> Record:
+        return max(self.records, key=lambda i: i.best_fitness)
+
+
     @abstractmethod
-    def update(self, sols: list[Solution], fits: list[float]) -> list[Solution]:
+    def update(self, sols: Xs, fits: Ys) -> Xs | list[X]:
         raise NotImplementedError()
 
 
