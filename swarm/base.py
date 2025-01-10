@@ -201,6 +201,10 @@ class Swarm(ABC):
 
     def fitness_history(self) -> list[float]:
         return [i.best_fitness for i in self.records]
+    
+
+    def output_history(self) -> list[float]:
+        return [i.best_output for i in self.records]
 
 
     def best_record(self) -> Record:

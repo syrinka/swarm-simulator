@@ -28,3 +28,13 @@ class Ackley(Evaluator):
         c = 2 * np.pi
         d = len(x)
         return -a * np.exp(-b * np.sqrt(np.sum(x ** 2) / d)) - np.exp(np.sum(np.cos(c * x)) / d) + a + np.e
+
+
+class Rastrigin(Evaluator):
+    @staticmethod
+    def infer(x: X):
+        d = x.shape[0]
+        y = 10 * d
+        for i in x:
+            y += i*i - 10 * np.cos(2*np.pi*i)
+        return y
