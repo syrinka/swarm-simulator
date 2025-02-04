@@ -1,27 +1,10 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import TypeAlias, Any, Callable, Literal, NamedTuple
 
 import numpy as np
-import numpy.typing as npt
 
+from .types import *
 from .utils import *
-
-
-X: TypeAlias = npt.NDArray[np.float64]
-"""Shape: (ndims, 1)"""
-Xs: TypeAlias = npt.NDArray[np.float64]
-"""Shape: (pops, ndims)"""
-Y: TypeAlias = float
-"""Type alias of float"""
-Ys: TypeAlias = npt.NDArray[np.float64]
-"""Shape: (pops, 1)"""
-TargetFunction: TypeAlias = Callable[[X], Y]
-
-
-OptimizeGoal: TypeAlias = Literal['maximum', 'minimum', 'zero']
-BoundaryMethod: TypeAlias = Literal['saturate', 'wrap']
-InitializeMethod: TypeAlias = Literal['random', 'lhs']
 
 
 @dataclass(kw_only=True, frozen=True)
@@ -102,18 +85,12 @@ class Problem(object):
                     sols.append(np.array(sol))
                 return np.array(sols)
 
-class Record(NamedTuple):
-    epoch: int
-    best_output: float
-    best_fitness: Y
-    best_solution: X
-
 
 class Swarm(ABC):
     pops: int
     problem: Problem
     solutions: Xs
-    metavar: dict[str, Any] = {}
+    metavar: Metavar = {}
 
     pbestx: Xs
     pbesty: Ys
