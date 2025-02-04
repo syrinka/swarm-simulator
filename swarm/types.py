@@ -16,13 +16,11 @@ TargetFunction: TypeAlias = Callable[[X], Y]
 Metavar: TypeAlias = dict[str, Any]
 
 
-OptimizeGoal: TypeAlias = Literal['maximum', 'minimum', 'zero']
 BoundaryMethod: TypeAlias = Literal['saturate', 'wrap']
 InitializeMethod: TypeAlias = Literal['random', 'lhs']
 
 
 class Record(NamedTuple):
     epoch: int
-    best_output: float
     best_fitness: Y
     best_solution: X

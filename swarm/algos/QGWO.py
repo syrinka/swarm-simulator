@@ -12,7 +12,7 @@ class QGWO(Swarm):
     def update(self, sols, fits):
         # sort all solutions according to its fitness
         # pick top 3 as the leaders
-        order = np.argsort(fits)[::-1]
+        order = np.argsort(fits)
         alpha, beta, delta, *_ = sols[order]
 
         alpha = alpha.copy()

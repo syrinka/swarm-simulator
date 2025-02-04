@@ -47,7 +47,7 @@ class CSO(Swarm):
             # 更新鸡群关系
             self.role.clear()
             self.leader.clear()
-            order = np.argsort(fits)[::-1]
+            order = np.argsort(fits)
             for i in range(0, rn):
                 self.role[order[i]] = 'rooster'
                 # self.leader[order[i]] = i
@@ -65,7 +65,7 @@ class CSO(Swarm):
                 case 'rooster':
                     k = randint(0, rn) # pick an opponent
                     scale = 0
-                    if fits[i] > fits[k]:
+                    if fits[i] < fits[k]:
                         scale = 1
                     else:
                         scale = exp((fits[k] - fits[i]) / (abs(fits[i]) + eps))

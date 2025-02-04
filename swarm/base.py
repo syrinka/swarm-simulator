@@ -50,7 +50,6 @@ class ArgInfo(object):
 class Problem(object):
     args: list[ArgInfo]
     func: TargetFunction
-    goal: OptimizeGoal = 'minimum'
 
     def initialize(self, num: int, method: InitializeMethod = 'random') -> Xs:
         match method:
@@ -111,7 +110,7 @@ class Swarm(ABC):
         self.pbestx = np.zeros((self.pops, self.ndims))
         self.pbesty = np.zeros((self.pops, ))
         self.gbestx = np.zeros((self.ndims, ))
-        self.gbesty = -np.inf
+        self.gbesty = np.inf
         self.records = []
         self.post_init()
 
@@ -121,19 +120,10 @@ class Swarm(ABC):
         for i in range(epochs):
             self.epoch = i
             fits = np.zeros((self.pops, ))
-            outs = np.zeros((self.pops, ))
 
             # evaluate
             for n, sol in enumerate(self.solutions):
-                out = self.problem.func(sol)
-                match self.problem.goal:
-                    case 'maximum':
-                        fit = out
-                    case 'minimum':
-                        fit = -out
-                    case 'zero':
-                        fit = -abs(out)
-                outs[n] = out
+                fit = self.problem.func(sol)
                 fits[n] = fit
 
                 if fit > self.pbesty[n]:
@@ -145,10 +135,9 @@ class Swarm(ABC):
 
             # record
             best_idx = fits.argmax()
-            best_output = outs[best_idx]
             best_fitness = fits[best_idx]
             best_solution = self.solutions[best_idx].copy()
-            rec = Record(self.epoch, best_output, best_fitness, best_solution)
+            rec = Record(self.epoch, best_fitness, best_solution)
             self.records.append(rec)
 
             if i != epochs - 1:
@@ -178,10 +167,6 @@ class Swarm(ABC):
 
     def fitness_history(self) -> list[float]:
         return [i.best_fitness for i in self.records]
-    
-
-    def output_history(self) -> list[float]:
-        return [i.best_output for i in self.records]
 
 
     def best_record(self) -> Record:
