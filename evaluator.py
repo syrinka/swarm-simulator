@@ -121,12 +121,12 @@ class Cross_In_Tray(Evaluator, name='Cross-in-Tray'):
     @staticmethod
     def infer(x: X):
         x1, x2 = x[:]
-        a = abs(100 - sqrt(x1*x2 + x2*x2)/pi)
+        a = abs(100 - sqrt(x1*x1 + x2*x2)/pi)
         return -0.0001*(abs(sin(x1) * sin(x2) * exp(a)) + 1)**0.1
     
     dimensions = 2
     domains = [-10, 10]
-    minimum = -2.06261
+    minimum = -2.062611870822739
 
 
 class Drop_Wave(Evaluator, name='Drop-Wave'):
@@ -149,7 +149,7 @@ class Eggholder(Evaluator):
     
     dimensions = 2
     domains = [-512, 512]
-    minimum = -959.6407
+    minimum = -959.640662720850742
 
 
 class Gramacy_n_Lee(Evaluator, name='Gramacy & Lee (2012)'):
@@ -204,7 +204,7 @@ class Langermann(Evaluator):
 
     dimensions = 2
     domains = [0, 10]
-    minimum = -5.1621
+    minimum = -5.1621259
 
 
 class Levy(Evaluator):
@@ -268,7 +268,7 @@ class Schaffer_N4(Evaluator, name='Schaffer N.4'):
     
     dimensions = 2
     domains = [-100, 100]
-    minimum = 0.2925
+    minimum = 0.292579
 
 
 class Schwefel(Evaluator):
