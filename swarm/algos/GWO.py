@@ -1,4 +1,5 @@
 from ..base import Swarm
+from ..utils import *
 
 import numpy as np
 
