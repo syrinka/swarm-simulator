@@ -84,12 +84,21 @@ class Problem(object):
                     sols.append(np.array(sol))
                 return np.array(sols)
 
+    def inbound(self, x: X) -> bool:
+        """判断一个解是否符合约束条件"""
+        for i, v in enumerate(x):
+            info = self.args[i]
+            if not info.min <= v <= info.max:
+                return False
+        return True
+
 
 class Swarm(ABC):
     pops: int
     problem: Problem
-    xs: Xs
     metavar: Metavar = {}
+
+    xs: Xs
 
     pbestx: Xs
     """Personal best X(s)"""
