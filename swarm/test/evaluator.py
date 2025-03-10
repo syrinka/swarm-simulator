@@ -44,7 +44,7 @@ class Evaluator(ABC):
         ...
 
     @classmethod
-    def get_problem(cls, nargs: int, **kwargs) -> Problem:
+    def get_problem(cls, nargs: int = 2, **kwargs) -> Problem:
         if cls.dimensions != 0:
             nargs = cls.dimensions
         infos = []
@@ -58,37 +58,6 @@ class Evaluator(ABC):
                 raise ValueError
             infos.append(ArgInfo(min=domain[0], max=domain[1]))
         return Problem(infos, cls.infer)
-
-
-class BatchEvaluateInput(NamedTuple):
-    # Swarm related
-    swarm: type[Swarm]
-    pop: int
-    metavar: Metavar
-    epoch: int
-
-    evaluators: list[type[Evaluator]]
-
-class BatchEvaluateResult(NamedTuple):
-    besty: Ys
-    loss: Ys
-
-
-def batch_evaluate(dim: int, input: BatchEvaluateInput) -> BatchEvaluateResult:
-    best = []
-    loss = []
-    for ev in input.evaluators:
-        prob = ev.get_problem(dim)
-        swarm = input.swarm(input.pop, prob, **input.metavar)
-        swarm.evolve(input.epoch)
-        record = swarm.last_record()
-        best.append(record['gbesty'])
-        loss.append(record['gbesty'] - ev.minimum)
-
-    return BatchEvaluateResult(
-        np.array(best),
-        np.array(loss)
-    )
 
 
 ## --------------------------- ##
