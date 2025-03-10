@@ -160,6 +160,7 @@ class Gramacy_n_Lee(Evaluator, name='Gramacy & Lee (2012)'):
     
     dimensions = 1
     domains = [0.5, 2.5]
+    minimum = -0.869011134989500
 
 
 class Griewank(Evaluator):
@@ -170,7 +171,7 @@ class Griewank(Evaluator):
         r = 1
         for i in range(dim):
             l += x[i]**2 / 4000
-            r *= cos(x[i] / sqrt(i))
+            r *= cos(x[i] / sqrt(i+1))
         return l - r + 1
     
     domains = [-600, 600]
@@ -185,7 +186,7 @@ class Holder_Table(Evaluator, name='Holder Table'):
     
     dimensions = 2
     domains = [-10, 10]
-    minimum = -19.2085
+    minimum = -19.20850256788675
 
 
 class Langermann(Evaluator):
@@ -286,4 +287,56 @@ class Sphere(Evaluator):
     def infer(x: X):
         return float(sum(x ** 2))
     
-    domains = [5.12, 5.12]
+    domains = [-5.12, 5.12]
+
+# Plate-Shaped
+
+class Zakharov(Evaluator):
+    @staticmethod
+    def infer(x: X):
+        fact1 = fact2 = 0
+        dim = x.shape[0]
+        for i in range(dim):
+            idx = i+1
+            fact1 += x[i]*x[i]
+            fact2 += 0.5*idx*x[i]
+        return fact1 + fact2**2 + fact2**4
+    
+    domains = [-5, 10]
+
+# Vally-Shaped
+
+class Rosenbrock(Evaluator):
+    @staticmethod
+    def infer(x: X):
+        dim = x.shape[0]
+        s = 0
+        for i in range(dim-1):
+            s += 100*(x[i+1]-x[i]**2)**2 + (x[i]-1)**2
+        return s
+
+    domains = [-5, 10]
+
+# Hybrid & Composition
+
+class Bent_Cigar(Evaluator):
+    @staticmethod
+    def infer(x: X):
+        return x[0]**2 + 10e6 * sum(x[1:] ** 2)
+    
+    domains = [-100, 100]
+
+# class HGBat(Evaluator):
+#     pass
+
+# class High_Conditioned_Elliptic(Evaluator):
+#     pass
+
+# class Katsuura(Evaluator):
+#     pass
+
+# class Happycat(Evaluator):
+#     pass
+
+# class Expanded_Rosenbrock_n_Griewangk(Evaluator):
+#     pass
