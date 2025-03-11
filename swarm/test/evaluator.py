@@ -43,11 +43,11 @@ class Evaluator(ABC):
     def infer(x: X) -> float:
         ...
 
+
     @classmethod
-    def get_problem(cls, nargs: int = 2, **kwargs) -> Problem:
-        if cls.dimensions != 0:
-            nargs = cls.dimensions
-        infos = []
+    def get_domains(cls, default_nargs: int = 2) -> list[list[float]]:
+        nargs = cls.dimensions or default_nargs
+        domains = []
         for i in range(nargs):
             domain: list
             if cls._domain_type == 'each':
@@ -56,8 +56,52 @@ class Evaluator(ABC):
                 domain = cls.domains
             else:
                 raise ValueError
+            domains.append(domain)
+        return domains
+
+
+    @classmethod
+    def get_problem(cls, default_nargs: int = 2, **kwargs) -> Problem:
+        infos = []
+        for domain in cls.get_domains(default_nargs):
             infos.append(ArgInfo(min=domain[0], max=domain[1]))
         return Problem(infos, cls.infer)
+
+
+    @classmethod
+    def visualize(cls, grain: int = 2000):
+        """
+        可视化函数 2D 图像
+        """
+        domains = cls.get_domains(2)
+        if len(domains) == 1:
+            raise NotImplementedError()
+
+        import matplotlib.pyplot as plt
+        import numpy as np
+        from mpl_toolkits.mplot3d import Axes3D
+
+        Xd, Yd = domains
+
+        x = np.linspace(Xd[0], Xd[1], grain)
+        y = np.linspace(Yd[0], Yd[1], grain)
+
+        X, Y = np.meshgrid(x, y)
+        Z = cls.infer(np.stack([X, Y]))
+
+        fig = plt.figure()
+        ax: Axes3D = fig.add_subplot(111, projection='3d') #type:ignore
+
+        ax.plot_surface(X, Y, Z, cmap='viridis', alpha=0.7)
+        ax.contour(X, Y, Z, zdir='z', offset=cls.minimum, cmap='coolwarm')
+
+        ax.set_xlabel('X-axis')
+        ax.set_ylabel('Y-axis')
+        ax.set_zlabel('Z-axis')
+        ax.set_title(cls.name)
+
+        ax.view_init(14, 120)
+        return fig
 
 
 ## --------------------------- ##

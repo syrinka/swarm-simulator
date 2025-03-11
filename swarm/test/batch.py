@@ -77,4 +77,4 @@ class BatchEvaluate(object):
 
         plt.imshow(result)
         plt.colorbar()
-        plt.show()
+        return plt.gcf()
