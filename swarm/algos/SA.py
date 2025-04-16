@@ -36,13 +36,13 @@ class SA(Swarm):
                 newx = neighbour(x, self.T)
             newy = self.request(newx)
 
-            delta = y - newy
+            delta = newy - y
             kT = self.metavar['k'] * self.T
 
             if newy < y:
                 # 新位置比原位置优秀，接受
                 out.append(newx)
-            elif rand() < exp(delta / self.T):
+            elif rand() < exp(-delta / self.T):
                 # 新位置比原位置更差，依概率接受
                 out.append(newx)
             else:
@@ -76,14 +76,14 @@ class QSA(Swarm):
                 newx = neighbour(x, self.T)
             newy = self.request(newx)
 
-            delta = y - newy
+            delta = newy - y
             dist = distance(x, newx)
             kT = self.metavar['k'] * self.T
 
             if newy < y:
                 # 新位置比原位置优秀，接受
                 out.append(newx)
-            elif rand() < exp(sqrt(delta)*dist / self.T):
+            elif rand() < exp(-sqrt(delta)*dist / self.T):
                 # 新位置比原位置更差，依概率接受
                 out.append(newx)
             else:
