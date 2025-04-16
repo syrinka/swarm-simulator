@@ -116,7 +116,7 @@ class Ackley(Evaluator):
         c = 2 * pi
         d = len(x)
         return -a * exp(-b * sqrt(sum(x ** 2) / d)) - exp(sum(cos(c * x)) / d) + a + e
-    
+
     domains = [-32.768, 32.768]
 
 
@@ -125,7 +125,7 @@ class Bukin_N6(Evaluator, name='Bukin N.6'):
     def infer(x: X):
         x1, x2 = x[:]
         return 100 * sqrt(abs(x2 - 0.01*x1**2)) + 0.01 * abs(x1 + 10)
-    
+
     dimensions = 2
     domains = [[-15, 5], [-3, 3]]
 
@@ -136,7 +136,7 @@ class Cross_In_Tray(Evaluator, name='Cross-in-Tray'):
         x1, x2 = x[:]
         a = abs(100 - sqrt(x1*x1 + x2*x2)/pi)
         return -0.0001*(abs(sin(x1) * sin(x2) * exp(a)) + 1)**0.1
-    
+
     dimensions = 2
     domains = [-10, 10]
     minimum = -2.062611870822739
@@ -148,7 +148,7 @@ class Drop_Wave(Evaluator, name='Drop-Wave'):
         x1, x2 = x[:]
         sq = x1*x1 + x2*x2
         return - (1 + cos(12*sqrt(sq))) / (0.5*sq + 2)
-    
+
     dimensions = 2
     domains = [-5.12, 5.12]
     minimum = -1
@@ -159,7 +159,7 @@ class Eggholder(Evaluator):
     def infer(x: X):
         x1, x2 = x[:]
         return -(x2 + 47) * sin(sqrt(abs(x2 + x1/2 + 47))) - x1*sin(sqrt(abs(x1-x2-47)))
-    
+
     dimensions = 2
     domains = [-512, 512]
     minimum = -959.640662720850742
@@ -170,7 +170,7 @@ class Gramacy_n_Lee(Evaluator, name='Gramacy & Lee (2012)'):
     def infer(x: X):
         x1 = x[0]
         return sin(10*pi*x1) / (2*x1) + (x1-1)**4
-    
+
     dimensions = 1
     domains = [0.5, 2.5]
     minimum = -0.869011134989500
@@ -186,7 +186,7 @@ class Griewank(Evaluator):
             l += x[i]**2 / 4000
             r *= cos(x[i] / sqrt(i+1))
         return l - r + 1
-    
+
     domains = [-600, 600]
 
 
@@ -196,7 +196,7 @@ class Holder_Table(Evaluator, name='Holder Table'):
         x1, x2 = x[:]
         sq = x1*x1 + x2*x2
         return -abs(sin(x1)*cos(x2)*exp(abs(1-sqrt(sq)/pi)))
-    
+
     dimensions = 2
     domains = [-10, 10]
     minimum = -19.20850256788675
@@ -232,9 +232,9 @@ class Levy(Evaluator):
         for i in range(dim-1):
             wi = 1 + (x[i] - 1)/4
             result = (wi-1)**2 * (1 + 10*sin(pi*wi+1)**2)
-        
+
         return result + sin(pi*w1)**2 + (wd-1)**2 * (1 + sin(2*pi*wd)**2)
-    
+
     domains = [-10, 10]
 
 
@@ -243,7 +243,7 @@ class Levy_N13(Evaluator, name='Levy N.13'):
     def infer(x: X):
         x1, x2 = x[:]
         return sin(3*pi*x1)**2 + (x1-1)**2*(1+sin(3*pi*x2)**2) + (x2-1)**2*(1+sin(2*pi*x2)**2)
-    
+
     dimensions = 2
     domains = [-10, 10]
 
@@ -267,7 +267,7 @@ class Schaffer_N2(Evaluator, name='Schaffer N.2'):
         fact1 = sin(x1*x1-x2*x2)**2 - 0.5
         fact2 = (1+0.001*(x1*x1+x2*x2))**2
         return 0.5 + fact1/fact2
-    
+
     dimensions = 2
     domains = [-100, 100]
 
@@ -279,7 +279,7 @@ class Schaffer_N4(Evaluator, name='Schaffer N.4'):
         fact1 = cos(sin(abs(x1*x1-x2*x2)))**2 - 0.5
         fact2 = (1+0.001*(x1*x1+x2*x2))**2
         return 0.5 + fact1/fact2
-    
+
     dimensions = 2
     domains = [-100, 100]
     minimum = 0.292579
@@ -290,7 +290,7 @@ class Schwefel(Evaluator):
     def infer(x: X):
         dim = x.shape[0]
         return 418.9829*dim - sum(x[i] * sin(sqrt(abs(x[i]))) for i in range(dim))
-    
+
     domains = [-500, 500]
 
 # Bowl-Shaped
@@ -298,8 +298,8 @@ class Schwefel(Evaluator):
 class Sphere(Evaluator):
     @staticmethod
     def infer(x: X):
-        return float(sum(x ** 2))
-    
+        return sum(np.pow(x, 2))
+
     domains = [-5.12, 5.12]
 
 # Plate-Shaped
@@ -314,7 +314,7 @@ class Zakharov(Evaluator):
             fact1 += x[i]*x[i]
             fact2 += 0.5*idx*x[i]
         return fact1 + fact2**2 + fact2**4
-    
+
     domains = [-5, 10]
 
 # Vally-Shaped
@@ -336,20 +336,14 @@ class Bent_Cigar(Evaluator):
     @staticmethod
     def infer(x: X):
         return x[0]**2 + 10e6 * sum(x[1:] ** 2)
-    
+
     domains = [-100, 100]
 
-# class HGBat(Evaluator):
-#     pass
+class Happycat(Evaluator):
+    @staticmethod
+    def infer(x: X):
+        d = x.shape[0]
+        square = sum(pow(x, 2))
+        return pow(abs(square - d), 1/4) + (0.5*square + sum(x))/d + 0.5
 
-# class High_Conditioned_Elliptic(Evaluator):
-#     pass
-
-# class Katsuura(Evaluator):
-#     pass
-
-# class Happycat(Evaluator):
-#     pass
-
-# class Expanded_Rosenbrock_n_Griewangk(Evaluator):
-#     pass
+    domains = [-100, 100]
